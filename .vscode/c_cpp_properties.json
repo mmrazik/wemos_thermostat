@@ -1,0 +1,36 @@
+{
+    "configurations": [
+        {
+            "name": "Arduino",
+            "includePath": [
+                "~/arduino-1.8.10/**",
+                "~/Arduino/**",
+                "~/.arduino15/packages/esp8266/tools/**",
+                "~/.arduino15/packages/esp8266/hardware/esp8266/2.6.3/**",
+                "~/usr/lib/gcc/avr/5.4.0/plugin/include/**",
+                "${workspaceFolder}/**",
+                "~/.arduino15/packages/esp8266/hardware/esp8266/2.6.3/**",
+                "~/.arduino15/packages/esp8266/tools/**",
+                "~/.arduino15/packages/esp8266/hardware/esp8266/2.6.3/**",
+                "~/.arduino15/packages/esp8266/tools/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "ARDUINO=188"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "forcedInclude": []
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "~/.arduino15/packages/esp8266/tools/**",
+                "~/.arduino15/packages/esp8266/hardware/esp8266/2.6.3/**"
+            ],
+            "forcedInclude": []
+        }
+    ],
+    "version": 4
+}
