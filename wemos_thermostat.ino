@@ -73,11 +73,12 @@ void setup() {
   server.on("/heating/off", handleHeatingOff);
   server.on("/setTargetTemperature", setTargetTemperature);
   server.begin();
+  delay(2000);
 }
 
 void loop() {
   server.handleClient();
-  //getTemp();
+  // getTemp();
 }
 
 
@@ -98,6 +99,8 @@ void getTemp(){
 
 String prepareMetricsPage()
 {
+  Sensors.requestTemperatures();
+
   String temps = String();
   long rssi = WiFi.RSSI();
 
@@ -148,5 +151,5 @@ void setTargetTemperature() {
 
 void handleRoot() {
     server.send(200, "text/plain", prepareMetricsPage());
-    delay(2000);
+    delay(1200);
 }
