@@ -120,9 +120,6 @@ String prepareMetricsPage()
   temps = temps + "# TYPE outside_house_device_temperature gauge\n";
   temps =  temps + "outside_house_device_temperature " + String(device_temp) + "\n";
 
-  temps = temps + "# TYPE outside_house_device_temperature gauge\n";
-  temps =  temps + "outside_house_device_temperature " + String(device_temp) + "\n";
-
   temps = temps + "# TYPE outside_house_heating_status gauge\n";
   temps =  temps + "outside_house_heating_status " + String(heatingOn ? 1 : 0) + "\n";
 
@@ -151,4 +148,5 @@ void setTargetTemperature() {
 
 void handleRoot() {
     server.send(200, "text/plain", prepareMetricsPage());
+    delay(2000);
 }
