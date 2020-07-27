@@ -51,7 +51,12 @@ void setup() {
   Serial.print("Connecting to ");
   Serial.println(WIFI_SSID);
   WiFi.hostname("thermostat");
+  #ifdef STATIC_IP
+  WiFi.config(staticIP, gateway, subnet, dns);
+  WiFi.mode(WIFI_STA);
+  #endif
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -73,7 +78,6 @@ void setup() {
   server.on("/heating/off", handleHeatingOff);
   server.on("/setTargetTemperature", setTargetTemperature);
   server.begin();
-  delay(2000);
 }
 
 void loop() {
