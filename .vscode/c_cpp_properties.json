@@ -14,13 +14,16 @@
                 "~/.arduino15/packages/esp8266/hardware/esp8266/2.6.3/**",
                 "~/.arduino15/packages/esp8266/tools/**",
                 "/home/mmrazik/.arduino15/packages/esp8266/hardware/esp8266/2.6.3/**",
-                "/home/mmrazik/.arduino15/packages/esp8266/tools/**"
+                "/home/mmrazik/.arduino15/packages/esp8266/tools/**",
+                "/home/mmrazik/arduino-1.8.12/libraries/**",
+                "/home/mmrazik/Arduino/libraries/**"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
-                "ARDUINO=188"
+                "ARDUINO=188",
+                "USBCON"
             ],
             "intelliSenseMode": "clang-x64",
             "forcedInclude": []

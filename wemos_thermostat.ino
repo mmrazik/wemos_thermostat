@@ -25,8 +25,12 @@
 // v3
 #define DHT22_PIN DHT22_ONBOARD_PIN
 
+// one of the thermomethers is close to the heating element
+// and should be ignored for the purpose of thermostat
+#define IGNORE_TEMP_SENSOR_INDEX 1
 
-#define METRIC_PREFIX "debug_"
+
+#define METRIC_PREFIX ""
 
 ESP8266WebServer server(80);
 
@@ -34,7 +38,9 @@ uint8_t nSensors = 0;
 OneWire Bus(BUS_PIN);
 DallasTemperature Sensors(&Bus);
 boolean heatingOn = false;
-float targetTemperature = 5;
+float targetTemperature = 5.7;
+float turnOffOffset = 0.2;
+
 
 DHTesp dht;
 
@@ -44,13 +50,16 @@ void handleHeatingOff();
 void setTargetTemperature();
 void getTemp();
 void updateTemperatures();
+float getAverageTemperature();
+void turnHeatingOn();
+void turnHeatingOff();
 
 /**/
 float dhtHumidity;
 float dhtTemperature;
 float sensorTemperatures[10]; // no more than 10 sensors will be reported
 unsigned long lastUpdatedTime = 0;
-
+unsigned long lastHeatingSwitchTime = 0;
 
 
 void setup() {
@@ -103,9 +112,44 @@ void setup() {
   server.begin();
 }
 
+void handleHeating() {
+  // don't make changes more often than once per minute
+  if ((millis() - lastHeatingSwitchTime) < 1*60*1000) return;
+
+  float current = getAverageTemperature();
+  // sanity check; if there are no sensors the dallas library returns -127
+  if (current < -100) {
+    Serial.println("Sensor error; ignoring");
+    return;
+  }
+  if (current < targetTemperature) {
+    turnHeatingOn();
+    lastHeatingSwitchTime = millis();
+  } else if (current > (turnOffOffset+targetTemperature))
+  {
+    turnHeatingOff();
+    lastHeatingSwitchTime = millis();
+  }
+}
+
 void loop() {
   server.handleClient();
   updateTemperatures();
+  handleHeating();
+}
+
+float getAverageTemperature() {
+  int count = 0;
+  float sum = 0;
+  for (uint8_t i = 0; i < nSensors; i++)
+  {
+    if (i != IGNORE_TEMP_SENSOR_INDEX) {
+      sum = sum + sensorTemperatures[i];
+      count = count + 1;
+    }
+  }
+  if (count == 0) return -127;
+  return sum / count;
 }
 
 void updateTemperatures() {
@@ -122,6 +166,7 @@ void updateTemperatures() {
     sensorTemperatures[i] = Sensors.getTempCByIndex(i);
   }
   lastUpdatedTime = millis();
+  Serial.println(String(getAverageTemperature()));
 }
 
 String prepareMetricsPage()
@@ -156,15 +201,24 @@ String prepareMetricsPage()
   return temps;
 }
 
-void handleHeatingOn() {
+void turnHeatingOn() {
     digitalWrite(RELAY_PIN, LOW);
     heatingOn = true;
+}
+
+void turnHeatingOff() {
+    digitalWrite(RELAY_PIN, HIGH);
+    heatingOn = false;
+}
+
+
+void handleHeatingOn() {
+    turnHeatingOn();
     server.send(200, "text/plain", "ON");
 }
 
 void handleHeatingOff() {
-    digitalWrite(RELAY_PIN, HIGH);
-    heatingOn = false;
+    turnHeatingOff();
     server.send(200, "text/plain", "OFF");
 }
 void setTargetTemperature() {
