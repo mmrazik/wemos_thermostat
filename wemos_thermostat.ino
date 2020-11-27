@@ -113,8 +113,16 @@ void setup() {
 }
 
 void handleHeating() {
+  unsigned long current_time = millis();
+  // handle time overflow; if the lastHeatingSwitchTime is in the future, consider
+  // it to be "now"
+  if (current_time < lastHeatingSwitchTime)  {
+    lastHeatingSwitchTime = current_time;
+    return;
+  }
+
   // don't make changes more often than once per minute
-  if ((millis() - lastHeatingSwitchTime) < 1*60*1000) return;
+  if ((current_time - lastHeatingSwitchTime) < 1*60*1000) return;
 
   float current = getAverageTemperature();
   // sanity check; if there are no sensors the dallas library returns -127
@@ -153,6 +161,14 @@ float getAverageTemperature() {
 }
 
 void updateTemperatures() {
+  unsigned long current_time = millis();
+  // handle time overflow; if the lastUpdatedTime is in the future, consider
+  // it to be "now"
+  if (current_time < lastUpdatedTime)  {
+    lastUpdatedTime = current_time;
+    return;
+  }
+
   if ((millis() - lastUpdatedTime) < 2000) return;
   Serial.println("Updating Temperature data");
 
